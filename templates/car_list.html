@@ -1,0 +1,57 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BMW Ultra Pro Gallery</title>
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+<header>
+    <h1>BMW Ultra Pro Gallery</h1>
+</header>
+
+<section class="filters">
+    <form method="get">
+        <select name="year">
+            <option value="">All Years</option>
+            {% for y in years %}
+            <option value="{{ y }}" {% if request.GET.year == y|stringformat:"s" %}selected{% endif %}>{{ y }}</option>
+            {% endfor %}
+        </select>
+        <label>Price: $<span id="minPriceVal">{{ request.GET.min_price|default:0 }}</span> - $<span id="maxPriceVal">{{ request.GET.max_price|default:100000 }}</span></label>
+        <input type="range" name="min_price" id="minPrice" min="0" max="100000" step="1000" value="{{ request.GET.min_price|default:0 }}">
+        <input type="range" name="max_price" id="maxPrice" min="0" max="100000" step="1000" value="{{ request.GET.max_price|default:100000 }}">
+        <button type="submit">Filter</button>
+    </form>
+</section>
+
+<main class="car-grid">
+    {% for car in cars %}
+    <div class="car-card">
+        <div class="card-image">
+            <img src="{{ car.image.url }}" alt="{{ car.name }}">
+        </div>
+        <div class="car-info">
+            <h2>{{ car.name }} ({{ car.model_year }})</h2>
+            <p>${{ car.price }}</p>
+        </div>
+    </div>
+    {% empty %}
+    <p class="no-cars">No cars found.</p>
+    {% endfor %}
+</main>
+
+<script>
+const minSlider = document.getElementById('minPrice');
+const maxSlider = document.getElementById('maxPrice');
+const minVal = document.getElementById('minPriceVal');
+const maxVal = document.getElementById('maxPriceVal');
+
+minSlider.addEventListener('input', () => minVal.textContent = minSlider.value);
+maxSlider.addEventListener('input', () => maxVal.textContent = maxSlider.value);
+</script>
+
+</body>
+</html>
